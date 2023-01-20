@@ -90,42 +90,6 @@ def request_order(symbol=symbol, lot=lot, side=side):
         return position_id
 
 
-def close_postion(side=side, lot=lot, position_id=position_id):
-    # NOTE not working. Its not closing positions
-    
-    # Initialize the connection if there is not
-    if mt5.initialize() == False:
-        mt5.initialize()
-    deviation = 20  # slippage
-    if side == True:
-        trade_type = mt5.ORDER_TYPE_SELL
-        price = bid_ask()[0]
-
-    if side == False:
-        trade_type = mt5.ORDER_TYPE_BUY
-        price = bid_ask()[1]
-
-    else:
-        print("Error: the side of the close wasnt specified")
-
-    request = {
-        "action": mt5.TRADE_ACTION_DEAL,
-        "symbol": symbol,
-        "volume": lot,  # float
-        "type": trade_type,
-        "position": position_id,  # from the order
-        "price": price,
-        "deviation": deviation,
-        "magic": 234000,
-        "comment": "python script open",
-        "type_time": mt5.ORDER_TIME_GTC,
-        "type_filling": mt5.ORDER_FILLING_RETURN,
-    }
-    result = mt5.order_send(request)
-    position_id = result.order
-    print(position_id)
-    if position_id == 0:
-        print("Error: order didnt close")
 
 
 """Returns the open positions"""
@@ -268,7 +232,44 @@ def limit_order(symbol, lot, sl=sl, tp=tp, entry=entry, buy=True, id_position=No
         result_comment = result.comment
         position_id = result.order
 
+        
+positions = mt5.positions_get()
 
+def close_ALL_postion(position):
+    # NOTE not working. Its not closing positions
+    # static values used in the order request
+    tick = mt5.symbol_info_tick(position.symbol)
+    if position.type == 1:
+        trade_type = mt5.ORDER_TYPE_BUY
+        price = tick.ask
+    else:
+        trade_type = mt5.ORDER_TYPE_SELL
+        price = tick.bid
+
+    request = {
+        "action": mt5.TRADE_ACTION_DEAL,
+        "position": position.ticket,
+        "symbol": position.symbol,
+        "volume": position.volume,  # float
+        "type": trade_type,
+        # from the order
+        "price": price,
+        "deviation": 20,
+        "magic": 250000,
+        "comment": "python script open",
+        "type_time": mt5.ORDER_TIME_GTC,
+        "type_filling": mt5.ORDER_FILLING_IOC,
+    }
+    result = mt5.order_send(request)
+    position_id = result.order
+    print(position_id)
+    if position_id == 0:
+        print("Error: order didnt close")
+    return result
+
+
+for position in positions:
+    close_ALL_postion(position)
 # def get_data(symbol==symbol, timeframe==timeframe, num_bars==num_bars):
 
 
