@@ -11,7 +11,7 @@ mt5.login(
 
 
 # ************************************* Useful variables *******************************************
-symbol = "XAGUSD"
+symbol = "GBPUSD"
 timeframe = mt5.TIMEFRAME_M15  # use this format
 num_bars = 20
 side = True  # NOTE in the future side will be true for long, Flase for short
@@ -92,7 +92,7 @@ def request_order(symbol=symbol, lot=lot, side=side):
 
 def close_postion(side=side, lot=lot, position_id=position_id):
     # NOTE not working. Its not closing positions
-    # static values used in the order request
+    
     # Initialize the connection if there is not
     if mt5.initialize() == False:
         mt5.initialize()
@@ -159,7 +159,7 @@ def open_positions():
 
 
 def market_order(symbol, lot, sl=sl, tp=tp, buy=True, id_position=None):
-    """Send the order requests"""
+    
 
     # Initialize the connection if there is not
     if mt5.initialize() == False:
